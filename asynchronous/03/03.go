@@ -31,6 +31,7 @@ func main() {
 	c := make(chan int)
 	go getLuckyNum(c)
 
+	// メインのごルーチンはチャネルから値を受け取るまでブロックされる
 	num := <-c
 	fmt.Printf("Today's your lucky number is %d!\n", num)
 
