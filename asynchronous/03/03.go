@@ -3,11 +3,10 @@ package main
 import (
 	"fmt"
 	"math/rand"
-	"sync"
 	"time"
 )
 
-func getLuckyNum() {
+func getLuckyNum(c chan<- int) {
 	fmt.Println("...")
 
 	// 占いにかかる時間はランダム
@@ -15,7 +14,7 @@ func getLuckyNum() {
 	time.Sleep(time.Duration(r.Intn(3000)) * time.Millisecond)
 
 	num := r.Intn(10)
-	fmt.Printf("Today's your lucky number is %d!\n", num)
+	c <- num
 }
 
 /*
@@ -29,13 +28,12 @@ func getLuckyNum() {
 func main() {
 	fmt.Println("what is today's lucky number?")
 
-	var wg sync.WaitGroup
-	wg.Add(1)
+	c := make(chan int)
+	go getLuckyNum(c)
 
-	go func() {
-		defer wg.Done()
-		getLuckyNum()
-	}()
+	num := <-c
+	fmt.Printf("Today's your lucky number is %d!\n", num)
 
-	wg.Wait()
+	close(c)
+
 }
